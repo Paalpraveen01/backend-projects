@@ -1,10 +1,39 @@
 package com.tasktracker;
 
+import com.tasktracker.service.TaskManager;
+
 public class Main {
 
     public static void main(String[] args) {
 
-        System.out.println("Task Tracker CLI");
+        TaskManager manager = new TaskManager();
 
+        if (args.length == 0) {
+            System.out.println("Please provide a command.");
+            return;
+        }
+
+        String command = args[0];
+
+        if (command.equals("add")) {
+
+            if (args.length < 2) {
+                System.out.println("Please provide a task description.");
+                return;
+            }
+
+            String description = args[1];
+
+            manager.addTask(description);
+
+            System.out.println("Task added successfully.");
+
+        } else if (command.equals("list")) {
+
+            manager.listTasks();
+
+        } else {
+            System.out.println("Unknown command.");
+        }
     }
 }
