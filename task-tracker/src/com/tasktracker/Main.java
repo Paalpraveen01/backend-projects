@@ -1,12 +1,14 @@
 package com.tasktracker;
 
 import com.tasktracker.service.TaskManager;
+import com.tasktracker.util.JsonFileHandler;
 
 public class Main {
 
     public static void main(String[] args) {
 
         TaskManager manager = new TaskManager();
+        JsonFileHandler fileHandler = new JsonFileHandler();
 
         if (args.length == 0) {
             System.out.println("Please provide a command.");
