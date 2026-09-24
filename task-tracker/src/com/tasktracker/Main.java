@@ -28,13 +28,49 @@ public class Main {
 
             manager.addTask(description);
 
-            System.out.println("Task added successfully.");
+            // System.out.println("Task added successfully.");
 
         } else if (command.equals("list")) {
 
             manager.listTasks();
 
-        } else {
+        }
+        else if (command.equals("delete")) {
+
+    if (args.length < 2) {
+        System.out.println("Please provide task ID.");
+        return;
+    }
+
+    int id = Integer.parseInt(args[1]);
+
+    manager.deleteTask(id);
+}else if (command.equals("update")) {
+
+    if (args.length < 3) {
+        System.out.println("Please provide task ID and description.");
+        return;
+    }
+
+    int id = Integer.parseInt(args[1]);
+    String description = args[2];
+
+    manager.updateTask(id, description);
+}
+else if (command.equals("update")) {
+
+    if (args.length < 3) {
+        System.out.println("Please provide task ID and description.");
+        return;
+    }
+
+    int id = Integer.parseInt(args[1]);
+    String description = args[2];
+
+    manager.updateTask(id, description);
+}
+        
+        else {
             System.out.println("Unknown command.");
         }
     }

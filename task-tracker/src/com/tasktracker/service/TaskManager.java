@@ -14,38 +14,20 @@ public class TaskManager {
         tasks = new ArrayList<>();
         nextId = 1;
         fileHandler = new JsonFileHandler();
+        loadTasks();
     }
 
-    public void addTask(String description) {
-
-    String existingData = fileHandler.readTasks();
+   public void addTask(String description) {
 
     Task task = new Task(nextId, description);
 
     tasks.add(task);
 
-    String jsonData;
-
-    if (existingData.equals("") || existingData.equals("[]")) {
-
-        jsonData =
-                "[{\"id\":" + task.getId() +
-                ",\"description\":\"" + task.getDescription() +
-                "\",\"status\":\"" + task.getStatus() +
-                "\"}]";
-
-    } else {
-
-        jsonData = existingData.substring(0, existingData.length() - 1)
-                + ",{\"id\":" + task.getId()
-                + ",\"description\":\"" + task.getDescription()
-                + "\",\"status\":\"" + task.getStatus()
-                + "\"}]";
-    }
-
-    fileHandler.writeTasks(jsonData);
+    saveTasks();
 
     nextId++;
+
+    System.out.println("Task added successfully.");
 }
 
     public void listTasks() {
@@ -57,4 +39,108 @@ public class TaskManager {
             );
         }
     }
+    public void deleteTask(int id) {
+
+    for (Task task : tasks) {
+
+        if (task.getId() == id) {
+            tasks.remove(task);
+            saveTasks();
+            System.out.println("Task deleted successfully.");
+            return;
+        }
+    }
+
+    System.out.println("Task not found.");
+}
+public void updateTask(int id, String description) {
+
+    for (Task task : tasks) {
+
+        if (task.getId() == id) {
+
+            task.setDescription(description);
+
+            saveTasks();
+
+            System.out.println("Task updated successfully.");
+            return;
+        }
+    }
+
+    System.out.println("Task not found.");
+}
+
+    private void loadTasks() {
+
+    String data = fileHandler.readTasks();
+
+    if (data.equals("") || data.equals("[]")) {
+        return;
+    }
+
+    data = data.substring(1, data.length() - 1);
+
+    String[] taskData = data.split("\\},\\{");
+
+    for (String task : taskData) {
+
+        task = task.replace("{", "").replace("}", "");
+
+        String[] fields = task.split(",");
+
+        int id = 0;
+        String description = "";
+        String status = "";
+
+        for (String field : fields) {
+
+            String[] keyValue = field.split(":", 2);
+
+            String key = keyValue[0].replace("\"", "");
+            String value = keyValue[1].replace("\"", "");
+
+            if (key.equals("id")) {
+                id = Integer.parseInt(value);
+            } else if (key.equals("description")) {
+                description = value;
+            } else if (key.equals("status")) {
+                status = value;
+            }
+        }
+
+        tasks.add(new Task(id, description, status));
+
+        if (id >= nextId) {
+            nextId = id + 1;
+        }
+    }
+}
+private void saveTasks() {
+
+    StringBuilder jsonData = new StringBuilder();
+
+    jsonData.append("[");
+
+    for (int i = 0; i < tasks.size(); i++) {
+
+        Task task = tasks.get(i);
+
+        jsonData.append("{\"id\":")
+                .append(task.getId())
+                .append(",\"description\":\"")
+                .append(task.getDescription())
+                .append("\",\"status\":\"")
+                .append(task.getStatus())
+                .append("\"}");
+
+        if (i < tasks.size() - 1) {
+            jsonData.append(",");
+        }
+    }
+
+    jsonData.append("]");
+
+    fileHandler.writeTasks(jsonData.toString());
+}
 }
